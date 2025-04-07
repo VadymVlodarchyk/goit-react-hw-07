@@ -1,3 +1,4 @@
+// version 2 — forced update for Git
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '../services/api';
 
