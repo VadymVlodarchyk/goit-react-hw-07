@@ -1,47 +1,39 @@
-import React from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addContact } from '../../redux/contactsOps';
 import css from './ContactForm.module.css';
 
-const ContactForm = () => {
+export default function ContactForm() {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts.items);
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  const validationSchema = Yup.object({
-    name: Yup.string().required('Name is required'),
-    number: Yup.string().required('Number is required'),
-  });
-
-  const handleSubmit = ({ name, number }, { resetForm }) => {
-    if (contacts.some(contact => contact.name && contact.name.toLowerCase() === name.toLowerCase())) {
-      alert(`${name} is already in contacts.`);
-    } else {
-      dispatch(addContact({ name, number }));
-      resetForm();
-    }
+  const handleSubmit = e => {
+    e.preventDefault();
+    dispatch(addContact({ name, number }));
+    setName('');
+    setNumber('');
   };
 
   return (
-    <Formik
-      initialValues={{ name: '', number: '' }}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
-      <Form className={css.formContainer}>
-        <Field name="name" placeholder="Name" className={css.field} />
-        <ErrorMessage name="name" component="div" className={css.errorMessage} />
-
-        <Field name="number" placeholder="Number" className={css.field} />
-        <ErrorMessage name="number" component="div" className={css.errorMessage} />
-
-        <button type="submit" className={css.submitBtn}>
-          Add contact
-        </button>
-      </Form>
-    </Formik>
+    <form className={css.formContainer} onSubmit={handleSubmit}>
+      <input
+        className={css.field}
+        type="text"
+        value={name}
+        placeholder="Імʼя"
+        onChange={e => setName(e.target.value)}
+        required
+      />
+      <input
+        className={css.field}
+        type="tel"
+        value={number}
+        placeholder="Номер"
+        onChange={e => setNumber(e.target.value)}
+        required
+      />
+      <button className={css.submitBtn} type="submit">Додати контакт</button>
+    </form>
   );
-};
-
-export default ContactForm;
+}
